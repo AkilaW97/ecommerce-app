@@ -1,8 +1,7 @@
 package com.ewis.ecommerce.controller;
 
 import com.ewis.ecommerce.model.Category;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,5 +14,11 @@ public class CategoryController {
     @GetMapping("/api/public/categories")
     public List <Category> getAllCategories(){
         return categories;
+    }
+
+    @PostMapping("/api/public/categories")
+    public String createCategory(@RequestBody Category category){
+        categories.add(category);
+        return "Category added sucsessfully";
     }
 }
