@@ -1,5 +1,7 @@
 package com.ewis.ecommerce.service;
 
+import com.ewis.ecommerce.exceptions.MyGlobalExceptionHandler;
+import com.ewis.ecommerce.exceptions.ResourceNotFoundException;
 import com.ewis.ecommerce.model.Category;
 import com.ewis.ecommerce.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class CategoryServiceImpl implements CategoryService{
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private MyGlobalExceptionHandler myGlobalExceptionHandler;
+
     @Override
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
@@ -35,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public String deleteCategory(Long categoryId) {
 
-        Category deleteCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category is Not found"));
+        Category deleteCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId" ,categoryId));
 
        categoryRepository.delete(deleteCategory);
        return "Deleted category id " + categoryId + " Successfully";
@@ -44,7 +49,7 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public Category updateCategory(Category category, Long categoryId) {
 
-        Category savedCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource Not found"));
+        Category savedCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId" ,categoryId));
 
         // Copy only the fields that are allowed to change
         savedCategory.setCategoryName(category.getCategoryName());
