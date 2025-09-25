@@ -1,5 +1,6 @@
 package com.ewis.ecommerce.service;
 
+import com.ewis.ecommerce.exceptions.APIException;
 import com.ewis.ecommerce.exceptions.MyGlobalExceptionHandler;
 import com.ewis.ecommerce.exceptions.ResourceNotFoundException;
 import com.ewis.ecommerce.model.Category;
@@ -23,8 +24,6 @@ public class CategoryServiceImpl implements CategoryService{
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @Autowired
-    private MyGlobalExceptionHandler myGlobalExceptionHandler;
 
     @Override
     public List<Category> getAllCategories() {
@@ -33,7 +32,10 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public void createCategory(Category category) {
-        //category.setCategoryId(nextId++);
+        Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
+        if (savedCategory != null){
+            throw new APIException("Category with the name " + category.getCategoryName() + " already exists");
+        }
         categoryRepository.save(category);
     }
 
