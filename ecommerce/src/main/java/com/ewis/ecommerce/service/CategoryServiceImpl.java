@@ -27,7 +27,12 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findAll();
+        if(categories.isEmpty()){
+            throw new APIException("Categories are not available");
+        }else {
+            return categories;
+        }
     }
 
     @Override
@@ -41,11 +46,9 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public String deleteCategory(Long categoryId) {
-
         Category deleteCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId" ,categoryId));
-
-       categoryRepository.delete(deleteCategory);
-       return "Deleted category id " + categoryId + " Successfully";
+        categoryRepository.delete(deleteCategory);
+        return "Deleted category id " + categoryId + " Successfully";
     }
 
     @Override
