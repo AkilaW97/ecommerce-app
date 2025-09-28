@@ -54,23 +54,31 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public String deleteCategory(Long categoryId) {
+    public CategoryDTO deleteCategory(Long categoryId) {
         Category deleteCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
         categoryRepository.delete(deleteCategory);
-        return "Deleted category id " + categoryId + " Successfully";
+        return modelMapper.map(deleteCategory, CategoryDTO.class);
     }
 
     @Override
-    public Category updateCategory(Category category, Long categoryId) {
+    public CategoryDTO updateCategory(CategoryDTO categoryDTO, Long categoryId) {
+        // find existing category
+        Category savedCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
 
-        Category savedCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
+        // map incoming DTO -> entity (but here you only need the fields to update)
+        Category category = modelMapper.map(categoryDTO, Category.class);
 
-        // Copy only the fields that are allowed to change
+        // update only allowed fields
         savedCategory.setCategoryName(category.getCategoryName());
 
-        // Because savedCategory is managed by Hibernate, save() will issue an UPDATE
-        return categoryRepository.save(savedCategory);
+        // save back to DB
+        Category updatedCategory = categoryRepository.save(savedCategory);
+
+        // return updated entity as DTO
+        return modelMapper.map(updatedCategory, CategoryDTO.class);
     }
+
 
 
 }
