@@ -1,6 +1,7 @@
 package com.ewis.ecommerce.controller;
 
 import com.ewis.ecommerce.model.Category;
+import com.ewis.ecommerce.payload.CategoryDTO;
 import com.ewis.ecommerce.payload.CategoryResponse;
 import com.ewis.ecommerce.service.CategoryService;
 import jakarta.validation.Valid;
@@ -27,9 +28,9 @@ public class CategoryController {
     }
 
     @PostMapping("/admin/categories")
-    public ResponseEntity<String> createCategory(@Valid @RequestBody Category category){
-        categoryService.createCategory(category);
-        return new ResponseEntity<>("Category added successfully", HttpStatus.CREATED);
+    public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO){
+        CategoryDTO savedCategoryDTO = categoryService.createCategory(categoryDTO);
+        return new ResponseEntity<>(savedCategoryDTO, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
