@@ -4,7 +4,10 @@ import com.ewis.ecommerce.exceptions.APIException;
 import com.ewis.ecommerce.exceptions.MyGlobalExceptionHandler;
 import com.ewis.ecommerce.exceptions.ResourceNotFoundException;
 import com.ewis.ecommerce.model.Category;
+import com.ewis.ecommerce.payload.CategoryDTO;
+import com.ewis.ecommerce.payload.CategoryResponse;
 import com.ewis.ecommerce.repository.CategoryRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +24,23 @@ public class CategoryServiceImpl implements CategoryService{
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
-    public List<Category> getAllCategories() {
+    public CategoryResponse getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
-        if(categories.isEmpty()){
+        if(categories.isEmpty())
             throw new APIException("Categories are not available");
-        }else {
-            return categories;
-        }
+
+            List<CategoryDTO> categoryDTOS = categories.stream()
+                    .map(category -> modelMapper.map(category, CategoryDTO.class))
+                    .toList();
+
+            CategoryResponse categoryResponse = new CategoryResponse();
+            categoryResponse.setContent(categoryDTOS);
+            return categoryResponse;
+
     }
 
     @Override
