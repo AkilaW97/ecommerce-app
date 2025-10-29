@@ -2,6 +2,7 @@ package com.ewis.ecommerce.controller;
 
 import com.ewis.ecommerce.model.Product;
 import com.ewis.ecommerce.payload.ProductDto;
+import com.ewis.ecommerce.payload.ProductResponse;
 import com.ewis.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,11 @@ public class ProductController {
     public ResponseEntity<ProductDto> addProduct (@RequestBody Product product, @PathVariable Long categoryId){
         ProductDto productDto = productService.addProduct(categoryId, product);
         return new ResponseEntity<>(productDto, HttpStatus.CREATED);
+    }
 
+    @GetMapping("/public/products")
+    public ResponseEntity<ProductResponse> getAllProducts(){
+        ProductResponse productResponse = productService.getAllProducts();
+        return new ResponseEntity<>(productResponse, HttpStatus.OK);
     }
 }

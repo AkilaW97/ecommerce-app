@@ -4,12 +4,18 @@ import com.ewis.ecommerce.exceptions.ResourceNotFoundException;
 import com.ewis.ecommerce.model.Category;
 import com.ewis.ecommerce.model.Product;
 import com.ewis.ecommerce.payload.ProductDto;
+import com.ewis.ecommerce.payload.ProductResponse;
 import com.ewis.ecommerce.repository.CategoryRepository;
 import com.ewis.ecommerce.repository.ProductRepository;
 import com.ewis.ecommerce.service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -34,4 +40,18 @@ public class ProductServiceImpl implements ProductService {
         Product savedProduct = productRepository.save(product);
         return modelMapper.map(savedProduct, ProductDto.class);
     }
+
+    @Override
+    public ProductResponse getAllProducts() {
+        List <Product> products =  productRepository.findAll();
+        List <ProductDto> productDtos = products.stream()
+                .map(product -> modelMapper.map(product, ProductDto.class))
+                .collect(Collectors.toList());
+
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setContent(productDtos);
+        return productResponse;
+    }
+
+
 }
