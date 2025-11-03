@@ -10,8 +10,6 @@ import com.ewis.ecommerce.repository.ProductRepository;
 import com.ewis.ecommerce.service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -99,6 +97,19 @@ public class ProductServiceImpl implements ProductService {
         Product savedProduct = productRepository.save(productFromDb);
         return modelMapper.map(savedProduct, ProductDto.class);
 
+    }
+
+    @Override
+    public ProductDto deleteProduct(Long productId) {
+
+        //Get the existing product from DB
+        Product productFromDb = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+        //Delete the product
+        productRepository.delete(productFromDb);
+
+        //return
+        return modelMapper.map(productFromDb, ProductDto.class);
     }
 
 
