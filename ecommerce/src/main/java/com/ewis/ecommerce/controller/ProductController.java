@@ -1,6 +1,5 @@
 package com.ewis.ecommerce.controller;
 
-import com.ewis.ecommerce.model.Product;
 import com.ewis.ecommerce.payload.ProductDto;
 import com.ewis.ecommerce.payload.ProductResponse;
 import com.ewis.ecommerce.service.ProductService;
@@ -17,9 +16,9 @@ public class ProductController {
     ProductService productService;
 
     @PostMapping("/admin/categories/{categoryId}/product")
-    public ResponseEntity<ProductDto> addProduct (@RequestBody Product product, @PathVariable Long categoryId){
-        ProductDto productDto = productService.addProduct(categoryId, product);
-        return new ResponseEntity<>(productDto, HttpStatus.CREATED);
+    public ResponseEntity<ProductDto> addProduct (@RequestBody ProductDto productDto, @PathVariable Long categoryId){
+        ProductDto savedProductDto = productService.addProduct(categoryId, productDto);
+        return new ResponseEntity<>(savedProductDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/public/products")
@@ -41,8 +40,8 @@ public class ProductController {
     }
 
     @PutMapping("/admin/products/{productId}")
-    public ResponseEntity<ProductDto> updateProduct (@RequestBody Product product, @PathVariable Long productId){
-        ProductDto updatedProductDto = productService.updateProduct(productId, product);
+    public ResponseEntity<ProductDto> updateProduct (@RequestBody ProductDto productDto, @PathVariable Long productId){
+        ProductDto updatedProductDto = productService.updateProduct(productId, productDto);
         return new ResponseEntity<>(updatedProductDto, HttpStatus.OK);
     }
 
