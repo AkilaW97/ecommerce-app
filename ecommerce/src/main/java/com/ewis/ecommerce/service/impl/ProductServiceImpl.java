@@ -1,5 +1,6 @@
 package com.ewis.ecommerce.service.impl;
 
+import com.ewis.ecommerce.exceptions.APIException;
 import com.ewis.ecommerce.exceptions.ResourceNotFoundException;
 import com.ewis.ecommerce.model.Category;
 import com.ewis.ecommerce.model.Product;
@@ -46,14 +47,31 @@ import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
 
-        Product product = modelMapper.map(productDto, Product.class);
+        //validation: to see if the product is existed or not
+        boolean isProductPresent = true;
 
-        product.setImage("default.png");
-        product.setCategory(category);
-        double specialPrice =  product.getPrice() -((product.getDiscount() * 0.01) * product.getPrice());
-        product.setSpecialPrice(specialPrice);
-        Product savedProduct = productRepository.save(product);
-        return modelMapper.map(savedProduct, ProductDto.class);
+        List<Product> products = category.getProducts();
+        for (Product value : products) {
+            //every product is comparing with the productDTO
+            if (value.getProductName().equals(productDto.getProductName())) {
+                isProductPresent = false;
+                break;
+            }
+        }
+        //End of validation
+
+        if (isProductPresent) {
+            Product product = modelMapper.map(productDto, Product.class);
+
+            product.setImage("default.png");
+            product.setCategory(category);
+            double specialPrice = product.getPrice() - ((product.getDiscount() * 0.01) * product.getPrice());
+            product.setSpecialPrice(specialPrice);
+            Product savedProduct = productRepository.save(product);
+            return modelMapper.map(savedProduct, ProductDto.class);
+        }else{
+            throw new APIException("Product already exist!");
+        }
     }
 
     @Override
@@ -62,6 +80,10 @@ import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
         List <ProductDto> productDtos = products.stream()
                 .map(product -> modelMapper.map(product, ProductDto.class))
                 .collect(Collectors.toList());
+
+        if(products.isEmpty()){
+            throw new APIException("No Products Exist");
+        }
 
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDtos);
