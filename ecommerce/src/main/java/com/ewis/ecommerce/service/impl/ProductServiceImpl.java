@@ -13,14 +13,16 @@ import com.ewis.ecommerce.service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
 
 @Service
  public class ProductServiceImpl implements ProductService {
@@ -75,18 +77,27 @@ import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
     }
 
     @Override
-    public ProductResponse getAllProducts() {
-        List <Product> products =  productRepository.findAll();
-        List <ProductDto> productDtos = products.stream()
-                .map(product -> modelMapper.map(product, ProductDto.class))
-                .collect(Collectors.toList());
+    public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
-        if(products.isEmpty()){
-            throw new APIException("No Products Exist");
-        }
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+        Page<Product> pageProducts = productRepository.findAll(pageDetails);
+
+        List<Product> products = pageProducts.getContent();
+
+        List<ProductDto> productDTOS = products.stream()
+                .map(product -> modelMapper.map(product, ProductDto.class))
+                .toList();
 
         ProductResponse productResponse = new ProductResponse();
-        productResponse.setContent(productDtos);
+        productResponse.setContent(productDTOS);
+        productResponse.setPageNumber(pageProducts.getNumber());
+        productResponse.setPageSize(pageProducts.getSize());
+        productResponse.setTotalElements(pageProducts.getTotalElements());
+        productResponse.setTotalPages(pageProducts.getTotalPages());
+        productResponse.setLastPage(pageProducts.isLast());
         return productResponse;
     }
 
