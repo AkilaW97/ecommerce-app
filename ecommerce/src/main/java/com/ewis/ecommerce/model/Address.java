@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.ManyToAny;
 
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ public class Address {
     @Size(min = 6, message = "Zip code must be at least 6 characters")
     private String zipcode;
 
+    @ToString.Exclude
     @ManyToMany(mappedBy = "addresses")
     private List<User> users = new ArrayList<>();
 
