@@ -1,5 +1,6 @@
 package com.ewis.ecommerce.security.jwt;
 
+import com.ewis.ecommerce.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -50,7 +51,7 @@ public class JwtUtils {
         }
     }
 
-    public ResponseCookie generateJwtCookie(com.ewis.ecommerce.security.jwt.services.UserDetailsImpl userPrincipal){
+    public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal){
         String jwt = generateTokenFromUsername(userPrincipal.getUsername());
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt)
                 .path("/api")

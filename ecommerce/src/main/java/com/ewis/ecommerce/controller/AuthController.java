@@ -10,6 +10,7 @@ import com.ewis.ecommerce.security.request.LoginRequest;
 import com.ewis.ecommerce.security.request.SignupRequest;
 import com.ewis.ecommerce.security.response.MessageResponse;
 import com.ewis.ecommerce.security.response.UserInfoResponse;
+import com.ewis.ecommerce.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -62,7 +63,7 @@ public class AuthController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        com.ewis.ecommerce.security.jwt.services.UserDetailsImpl userDetails = (com.ewis.ecommerce.security.jwt.services.UserDetailsImpl) authentication.getPrincipal();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
@@ -149,7 +150,7 @@ public class AuthController {
 
     @GetMapping("/user")
     public ResponseEntity<UserInfoResponse> getUserDetails(Authentication authentication){
-        com.ewis.ecommerce.security.jwt.services.UserDetailsImpl userDetails = (com.ewis.ecommerce.security.jwt.services.UserDetailsImpl) authentication.getPrincipal();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())

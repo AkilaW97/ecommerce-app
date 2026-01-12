@@ -1,4 +1,4 @@
-package com.ewis.ecommerce.security.jwt.services;
+package com.ewis.ecommerce.security.services;
 
 import java.util.Collection;
 import java.util.List;
