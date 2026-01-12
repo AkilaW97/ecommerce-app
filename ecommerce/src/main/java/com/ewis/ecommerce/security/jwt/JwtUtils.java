@@ -81,6 +81,13 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
+    public ResponseCookie getCleanJwtCookie(){
+                ResponseCookie cookie = ResponseCookie.from(jwtCookie, null)
+                .path("/api")
+                .build();
+        return cookie;
+    }
+
     public boolean validateJwtToken(String authToken) {
         try {
             System.out.println("Validate");

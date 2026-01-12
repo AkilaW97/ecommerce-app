@@ -138,6 +138,15 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/signout")
+    public ResponseEntity<?> signoutUser(){
+        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,
+                        cookie.toString())
+                .body(new MessageResponse("You've been signed out"));
+    }
+
     @GetMapping("/user")
     public ResponseEntity<UserInfoResponse> getUserDetails(Authentication authentication){
         com.ewis.ecommerce.security.jwt.services.UserDetailsImpl userDetails = (com.ewis.ecommerce.security.jwt.services.UserDetailsImpl) authentication.getPrincipal();
@@ -150,7 +159,6 @@ public class AuthController {
                 userDetails.getUsername(), roles);
 
         return ResponseEntity.ok().body(response);
-
         }
 }
 
